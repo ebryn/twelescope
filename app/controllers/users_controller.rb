@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   def index
-    @users = User.find(:all)
+    @users = User.find(:all, :select => "users.*, (SELECT COUNT(*) FROM linkages WHERE users.id = linkages.user_id) AS n", :order => 'twitter_id')
   end
   
   def show
