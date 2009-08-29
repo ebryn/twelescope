@@ -1,5 +1,5 @@
 %table
   - for user in @users
     %tr
-      %td= link_to user.twitter_id, user_path(user.twitter_id)
+      %td= link_to user.twitter_id, user_path(user)
       %td= user.n

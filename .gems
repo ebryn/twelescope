@@ -1,3 +1,4 @@
 nokogiri
 hayesdavis-grackle --source gems.github.com
 will_paginate
+friendly_id

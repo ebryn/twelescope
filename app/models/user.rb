@@ -3,6 +3,13 @@ class User < ActiveRecord::Base
   has_many :friends, :through => :friendships
   has_many :linkages
   has_many :links, :through => :linkages
+  has_friendly_id :twitter_id
+
+  def update_from_twitter
+    fetch_linkages
+    create_users_from_twitter_friends
+    read_friends_twitter_feeds
+  end
   
   def fetch_twitter_friends
     @@client ||= Grackle::Client.new
@@ -48,8 +55,10 @@ class User < ActiveRecord::Base
   end
   
   def perform
-    fetch_linkages
-    create_users_from_twitter_friends
-    read_friends_twitter_feeds
+    update_from_twitter
+  end
+
+  def to_param
+    twitter_id
   end
 end
