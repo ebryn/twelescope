@@ -5,7 +5,7 @@
   - for link in @user_links
     %tr
       %td= link.linkages.count
-      %td= link_to((link.page_title || link.expanded_url || link.url), link.url)
+      %td= link_to((link.page_title || link.expanded_url || link.url), (link.expanded_url || link.url))
 
 %h3 popular links from friends
 %table
