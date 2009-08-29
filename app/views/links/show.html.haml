@@ -1,0 +1,7 @@
+%h2= @link.page_title
+%h3= auto_link(@link.expanded_url || @link.url)
+= pluralize(@link.linkages.count, 'linkage')
+%table
+  - for linkage in @link.linkages
+    %tr
+      %td= link_to linkage.user.twitter_id, user_path(linkage.user.twitter_id)
