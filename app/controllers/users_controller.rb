@@ -4,7 +4,12 @@ class UsersController < ApplicationController
   end
   
   def show
-    @user = User.find_or_create_by_twitter_id(params[:id])
+    @user = User.find_or_initialize_by_twitter_id(params[:id])
+    if @user.new_record?
+      flash[:notice] = "Searching your network.  Results should appear soon."
+      @user.save!
+      @user.create_users_from_twitter_friends
+    end
     @user_links = @user.links.find(:all, :limit => 25, :select => "links.*, (SELECT COUNT(*) FROM linkages WHERE links.id = linkages.link_id) AS n").sort_by { |l| l.n.to_i }.reverse
     @links = Link.find_by_sql( ["SELECT COALESCE(expanded_url, url) AS url, page_title, COUNT(*) AS n FROM links JOIN linkages ON links.id = link_id JOIN friendships f ON f.friend_id = linkages.user_id WHERE f.user_id = ? GROUP BY COALESCE(expanded_url, url), page_title ORDER BY COUNT(*) DESC LIMIT 30", @user.id ] )
     @friends = @user.friends.all(:order => "twitter_followers_count DESC")

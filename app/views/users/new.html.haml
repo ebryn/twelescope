@@ -1,0 +1,10 @@
+.centering-block
+  .signup
+    %h1 Welcome to Information Rehab.
+
+    %p Take a deep breath, and tell use your name on twitter
+
+    - form_tag '/users', :method => :get do
+      %p
+        %label{:for => 'twitter_username'} 
+        = text_field_tag :id, "", :id => 'twitter_username'
