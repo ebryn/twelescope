@@ -19,8 +19,8 @@ ActiveRecord::Schema.define(:version => 20090829203345) do
   end
 
   create_table "linkages", :force => true do |t|
-    t.integer  "link_id"
-    t.integer  "user_id"
+    t.integer  "link_id_id"
+    t.integer  "user_id_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
