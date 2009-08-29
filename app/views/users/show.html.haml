@@ -1,4 +1,19 @@
 %p= @user.twitter_id
+
+%h3 recent links
+%table
+  - for link in @user_links
+    %tr
+      %td= link.linkages.count
+      %td= link_to((link.page_title || link.expanded_url || link.url), link.url)
+
+%h3 popular links from friends
+%table
+  - for link in @links
+    %tr
+      %td= link.n
+      %td= link_to((link.page_title || link.url), link.url)
+
 %h3 popular domains
 %table
   - for domain in @popular_domains
@@ -6,16 +21,13 @@
       %td= domain.n
       %td= domain.domain
 
-%h3 popular links from friends
-%table
-  - for link in @links
-    %tr
-      %td= link.n
-      %td= link.url
-%h3 friends
-%table
-  - for friend in @friends
-    %tr
-      %td= friend.twitter_id
-      %td= friend.twitter_followers_count
+-#
+  %h3 friends
+  %table
+    - for friend in @friends
+      %tr
+        %td= friend.twitter_id
+        %td= friend.twitter_followers_count
 
+
+%h3 videos

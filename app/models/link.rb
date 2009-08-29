@@ -1,6 +1,7 @@
 class Link < ActiveRecord::Base
-  before_save :set_domain
   before_save :expand_url
+  before_save :set_domain
+  before_save :fetch_title
   has_many :linkages
   has_many :users, :through => :linkages
   
@@ -33,8 +34,8 @@ class Link < ActiveRecord::Base
   end
     
   def self.expand_url(url)
-    uri = URI.parse url
     begin
+      uri = URI.parse url
       Net::HTTP.start( uri.host, uri.port ) do |http|
         http.read_timeout = 5
         response = http.head(uri.request_uri)
@@ -43,12 +44,31 @@ class Link < ActiveRecord::Base
           location = "http://#{uri.host}/#{location}" if location =~ /^\//
           expand_url location
         else
-           url
+          if uri.host == "om.ly"
+            UrlShortenerExpander.get(url)
+          else
+            url
+          end
         end
       end
     rescue Timeout::Error => e
       logger.debug "FUCK! #{url}"
       nil
+    rescue Net::HTTPBadResponse => e
+      logger.debug "WTF? #{url}"
+      nil
+    rescue URI::InvalidURIError => e
+      nil
+    rescue SocketError => e
+      nil
     end
+  end
+  
+  def fetch_title
+    Timeout::timeout(5) do
+      self.page_title = Nokogiri.HTML(open(expanded_url || url).read).at("//title").text.strip rescue nil
+    end
+  rescue Timeout::Error => e
+    nil
   end
 end

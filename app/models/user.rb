@@ -2,6 +2,7 @@ class User < ActiveRecord::Base
   has_many :friendships
   has_many :friends, :through => :friendships
   has_many :linkages
+  has_many :links, :through => :linkages
   
   def fetch_twitter_friends
     @@client ||= Grackle::Client.new
@@ -19,8 +20,10 @@ class User < ActiveRecord::Base
   end
   
   def find_urls_in_tweets
+    return [] if self.last_searched
     @@client ||= Grackle::Client.new
     results = @@client[:search].search.json?(:rpp => 100, :from => self.twitter_id).results
+    self.update_attribute :last_searched, Time.now
     results.select { |r| r.text.include?('http://') }.
       map { |r| URI.extract(r.text, 'http') }.flatten
   end
@@ -38,7 +41,9 @@ class User < ActiveRecord::Base
   def fetch_linkages
     find_urls_in_tweets.each do |url|
       link = Link.find_or_create_by_url(url)
-      self.linkages.create :link => link
+      unless links.include?(link)
+        self.linkages.create :link => link
+      end
     end
   end
 end
