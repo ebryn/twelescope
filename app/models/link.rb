@@ -1,5 +1,3 @@
-require 'curb'
-
 class Link < ActiveRecord::Base
   before_save :set_domain
   before_save :expand_url
@@ -31,24 +29,26 @@ class Link < ActiveRecord::Base
   end
   
   def expand_url
-    c = Curl::Easy.new
-    c.url = self.url
-    c.header_in_body = true
-    c.timeout = 2
-    # puts link.url
+    self.expanded_url = self.class.expand_url url
+  end
+    
+  def self.expand_url(url)
+    uri = URI.parse url
     begin
-      c.perform
-      c.follow_location = false
-      # puts "Response: #{c.response_code}"
-      if [301, 302].include? c.response_code
-        location = c.body_str.match(/^Location: (.*)$/i)[1].try(:strip)
-        self.expanded_url = location if location
-      else
-        # link.update_attribute :expanded_url, link.url
+      Net::HTTP.start( uri.host, uri.port ) do |http|
+        http.read_timeout = 5
+        response = http.head(uri.request_uri)
+        if ["301", "302"].include?( response.code ) && response['Location']
+          location = response['location'] 
+          location = "http://#{uri.host}/#{location}" if location =~ /^\//
+          expand_url location
+        else
+           url
+        end
       end
-    rescue Curl::Err::HostResolutionError, Curl::Err::RecvError => e
-      puts "Bad url: #{self.url}"
-    rescue Curl::Err::TimeoutError => e
+    rescue Timeout::Error => e
+      logger.debug "FUCK! #{url}"
+      nil
     end
   end
 end

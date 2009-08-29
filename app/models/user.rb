@@ -1,5 +1,3 @@
-require 'grackle'
-
 class User < ActiveRecord::Base
   has_many :friendships
   has_many :friends, :through => :friendships
@@ -29,7 +27,11 @@ class User < ActiveRecord::Base
   
   def read_friends_twitter_feeds
     self.friends.map do |friend|
-      yield [friend, friend.fetch_linkages]
+      if block_given?
+        yield [friend, friend.fetch_linkages]
+      else
+        friend.fetch_linkages
+      end
     end
   end
   
