@@ -1,0 +1,7 @@
+Ideas
+-----
+* Popularity by domain
+
+Problems to solve
+-----------------
+* Use HEAD requests so we don't download shit

@@ -1,0 +1,21 @@
+%p= @user.twitter_id
+%h3 popular domains
+%table
+  - for domain in @popular_domains
+    %tr
+      %td= domain.n
+      %td= domain.domain
+
+%h3 popular links from friends
+%table
+  - for link in @links
+    %tr
+      %td= link.n
+      %td= link.url
+%h3 friends
+%table
+  - for friend in @friends
+    %tr
+      %td= friend.twitter_id
+      %td= friend.twitter_followers_count
+
