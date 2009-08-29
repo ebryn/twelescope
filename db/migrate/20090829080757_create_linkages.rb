@@ -1,8 +1,8 @@
 class CreateLinkages < ActiveRecord::Migration
   def self.up
     create_table :linkages do |t|
-      t.references :link_id
-      t.references :user_id
+      t.references :link
+      t.references :user
 
       t.timestamps
     end
