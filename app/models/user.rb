@@ -46,4 +46,10 @@ class User < ActiveRecord::Base
       end
     end
   end
+  
+  def perform
+    fetch_linkages
+    create_users_from_twitter_friends
+    read_friends_twitter_feeds
+  end
 end
