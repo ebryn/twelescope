@@ -6,5 +6,4 @@ db/*.sqlite3
 **~
 **#*
 **.swp
-**/stylesheets/*css
 themes
