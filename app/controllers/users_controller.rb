@@ -6,7 +6,10 @@ class UsersController < ApplicationController
   
   def show
     @user = User.find_by_twitter_name(params[:id])
-    redirect_to( :action => :new ) and return unless @user
+    unless @user
+      flash[:notice] = "We don't know about you yet. Join us!"
+      redirect_to( :action => :new, :twitter_name => params[:id] ) and return
+    end
     @user_links = @user.links.find(:all, :limit => 25, :select => "links.*, (SELECT COUNT(*) FROM linkages WHERE links.id = linkages.link_id) AS n").sort_by { |l| l.n.to_i }.reverse
     @links = Link.find_by_sql( ["SELECT COALESCE(expanded_url, url) AS url, page_title, COUNT(*) AS n FROM links JOIN linkages ON links.id = link_id JOIN friendships f ON f.friend_id = linkages.user_id WHERE f.user_id = ? GROUP BY COALESCE(expanded_url, url), page_title ORDER BY COUNT(*) DESC LIMIT 30", @user.id ] )
     @friends = @user.friends.all(:order => "twitter_followers_count DESC")
