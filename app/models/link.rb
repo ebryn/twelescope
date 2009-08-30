@@ -39,9 +39,8 @@ class Link < ActiveRecord::Base
 
   def set_domain
     begin
-      unless self.domain_name
-        uri = URI.parse(self.url)
-        self.domain_name = uri.host.try(:gsub, /www\d*\./, '')
+      unless domain && domain.name == domain_name && url.include?(domain_name)
+        reset_domain
       end
       ensure_domain
     rescue URI::InvalidURIError => e
@@ -49,45 +48,41 @@ class Link < ActiveRecord::Base
   end
   
   def expand_url
-    if expanded_url = self.class.expand_url(url)
-      #self.short_links.create :url => self.url
+    expanded_url = self.class.expand_url(url)
+    self.followed = true
+    if expanded_url != url 
       self.original_url = url
       self.url = expanded_url
-      set_domain
-      true
-    else
-      false
+    end
+    reset_domain
+  end
+
+  def reset_domain
+    uri = URI.parse(self.url)
+    self.domain_name = uri.host.try(:gsub, /www\d*\./, '')
+    unless domain && domain.name == domain_name
+      self.domain = Domain.find_or_create_by_name domain_name
     end
   end
     
   def self.expand_url(url)
     begin
-      uri = URI.parse url
-      Net::HTTP.start( uri.host, uri.port ) do |http|
-        http.read_timeout = 5
-        response = http.head(uri.request_uri)
-        if ["301", "302"].include?( response.code ) && response['Location']
-          location = response['location'] 
-          location = "http://#{uri.host}/#{location}" if location =~ /^\//
-          expand_url location
-        else
-          if uri.host == "om.ly"
-            UrlShortenerExpander.get(url)
-          else
-            url
-          end
-        end
+      return UrlShortenerExpander.get(url) if url =~ /^http:\/\/om\.ly/ 
+      if result = Rehab::UrlLookup.follow( :base_uri => url, :timeout => 2000 )
+        return expand_url( result ) if result.is_a? String
+        url.to_s
+      else
+        self.inactive = true
       end
     rescue Timeout::Error => e
       logger.debug "FUCK! #{url}"
-      nil
-    rescue Net::HTTPBadResponse => e
-      logger.debug "WTF? #{url}"
       nil
     rescue URI::InvalidURIError => e
       nil
     rescue SocketError => e
       nil
+    rescue => e
+      logger.debug "Unknown error in url expander for #{url}"
     end
   end
   
@@ -108,7 +103,7 @@ class Link < ActiveRecord::Base
   def perform
     expand_url
     fetch_title
-    save
+    save!
   rescue => e
   end
 end
