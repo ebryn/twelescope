@@ -11,9 +11,9 @@ class DomainsController < ApplicationController
   def show
     @domain = params[:id].gsub('_', '.')
     @links = Link.paginate(:page => params[:page], 
-      :select => "links.id, domain, page_title, expanded_url, url, COUNT(*) AS linkages_count",
+      :select => "links.id, domain, page_title, url, COUNT(*) AS linkages_count",
       :order => "COUNT(*) DESC, links.id",
-      :group => "links.id, domain, page_title, expanded_url, url",
+      :group => "links.id, domain, page_title, url",
       :joins => "JOIN linkages ON links.id = linkages.link_id",
       :conditions => {:domain => @domain})
   end

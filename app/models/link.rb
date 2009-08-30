@@ -8,32 +8,40 @@ class Link < ActiveRecord::Base
     Delayed::Job.enqueue self
   end
   
-  def self.fetch_expanded_urls
-    find_in_batches(:conditions => {:expanded_url => nil}) do |links|
-      links.each do |link|
-        link.expand_url
-      end
-    end
-  end
+  # def self.fetch_expanded_urls
+  #   find_in_batches(:conditions => {:short_links_count => nil}) do |links|
+  #     links.each do |link|
+  #       link.expand_url
+  #       link.save
+  #     end
+  #   end
+  # end
   
   def self.set_domain_fields
-    find_in_batches(:conditions => {:domain => nil}) do |links|
+    find_in_batches(:conditions => ["domain IS NULL OR position(domain in url) = 0"]) do |links|
       links.each do |link|
         link.set_domain
+        link.save
       end
     end
   end
-  
+
   def set_domain
     begin
-      uri = URI.parse(self.expanded_url || self.url)
+      uri = URI.parse(self.url)
       self.domain = uri.host.try(:gsub, /www\d*\./, '')
     rescue URI::InvalidURIError => e
     end
   end
   
   def expand_url
-    self.expanded_url = self.class.expand_url url
+    if expanded_url = self.class.expand_url(url)
+      self.short_links.create :url => self.url
+      self.url = expanded_url
+      true
+    else
+      false
+    end
   end
     
   def self.expand_url(url)
@@ -50,7 +58,7 @@ class Link < ActiveRecord::Base
           if uri.host == "om.ly"
             UrlShortenerExpander.get(url)
           else
-            url
+            nil
           end
         end
       end
