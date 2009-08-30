@@ -40,7 +40,7 @@
           %td
             .linkages_count= domain.n
           %td
-            .title= domain.domain
+            .title= link_to(domain.domain, domain_path(domain.domain.try(:gsub, '.', '_'))) if domain.domain
 
     -#
       %h3 friends
