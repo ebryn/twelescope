@@ -4,4 +4,4 @@
 %table
   - for linkage in @link.linkages
     %tr
-      %td= link_to linkage.user.twitter_id, user_path(linkage.user.twitter_id)
+      %td= link_to linkage.user.twitter_name, user_path(linkage.user)

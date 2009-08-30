@@ -1,6 +1,6 @@
 %h1
   Most Popular:
-  = link_to @user.twitter_id, "http://twitter.com/#{@user.twitter_id}"
+  = link_to @user.twitter_name, "http://twitter.com/#{@user.twitter_name}"
 
 %h3 recent links
 %table
@@ -28,7 +28,7 @@
   %table
     - for friend in @friends
       %tr
-        %td= friend.twitter_id
+        %td= friend.twitter_name
         %td= friend.twitter_followers_count
 
 

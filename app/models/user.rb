@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
   has_many :friends, :through => :friendships
   has_many :linkages
   has_many :links, :through => :linkages
-  has_friendly_id :twitter_id
+  has_friendly_id :twitter_name
 
   def update_from_twitter
     fetch_linkages
@@ -13,12 +13,12 @@ class User < ActiveRecord::Base
   
   def fetch_twitter_friends
     @@client ||= Grackle::Client.new
-    @@client.statuses.friends.send("#{twitter_id}?")
+    @@client.statuses.friends.send("#{twitter_name}?")
   end
   
   def create_users_from_twitter_friends
     fetch_twitter_friends.map do |friend|
-      friend_record = User.find_or_create_by_twitter_id(friend.screen_name)
+      friend_record = User.find_or_create_by_twitter_name(friend.screen_name)
       unless self.friends.include?(friend_record)
         self.friendships.create :friend => friend_record
       end
@@ -29,7 +29,7 @@ class User < ActiveRecord::Base
   def find_urls_in_tweets
     return [] if self.last_searched
     @@client ||= Grackle::Client.new
-    results = @@client[:search].search.json?(:rpp => 100, :from => self.twitter_id).results
+    results = @@client[:search].search.json?(:rpp => 100, :from => self.twitter_name).results
     self.update_attribute :last_searched, Time.now
     results.select { |r| r.text.include?('http://') }.
       map { |r| URI.extract(r.text, 'http') }.flatten
@@ -56,9 +56,5 @@ class User < ActiveRecord::Base
   
   def perform
     update_from_twitter
-  end
-
-  def to_param
-    twitter_id
   end
 end
