@@ -28,8 +28,9 @@ class Link < ActiveRecord::Base
   #   end
   # end
   
+  
   def self.set_domain_fields
-    find_in_batches(:conditions => ["domain IS NULL OR position(domain in url) = 0"]) do |links|
+    find_in_batches(:conditions => "domain_name IS NULL OR url NOT LIKE ('%' || domain_name || '%')") do |links|
       links.each do |link|
         link.set_domain
         link.save
