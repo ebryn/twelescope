@@ -1,0 +1,15 @@
+= stylesheet_link_tag 'users-show'
+%h1
+  = @domain
+
+%h2 most popular links
+%table
+  - for link in @links
+    %tr
+      %td
+        .linkages_count= link.linkages.count
+      %td
+        .domain= link.domain
+        .title= link_to((link.page_title || link.expanded_url || link.url), (link.expanded_url || link.url))
+        .users_list= link.linkages.map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
+

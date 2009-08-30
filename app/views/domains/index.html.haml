@@ -6,5 +6,5 @@
       %td
         .linkages_count= domain.linkages_count
       %td
-        .title= link_to domain.domain, "http://#{domain.domain}"
+        .title= link_to domain.domain, domain_path(domain.domain.gsub('.', '_'))
       
