@@ -1,0 +1,10 @@
+= stylesheet_link_tag 'users-show'
+
+%table
+  - for domain in @domains
+    %tr
+      %td
+        .linkages_count= domain.linkages_count
+      %td
+        .title= link_to domain.domain, "http://#{domain.domain}"
+      
