@@ -6,4 +6,5 @@ db/*.sqlite3
 **~
 **#*
 **.swp
+app/stylesheets/.sass-cache/
 themes
