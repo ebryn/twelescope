@@ -12,11 +12,11 @@ class UsersController < ApplicationController
       redirect_to( :action => :new, :twitter_name => params[:id] ) and return
     end
 
-    @user_links = @user.links.find(:all, :limit => 25, :select => "links.*, (SELECT COUNT(*) FROM linkages WHERE links.id = linkages.link_id) AS n").sort_by { |l| l.n.to_i }.reverse
+    @user_links = @user.links.paginate(:page => params[:page], :include => {:linkages => :user})
     @friend_links =  Link.find_by_sql( ["SELECT links.id, url, domain_name, page_title, COUNT(*) AS qty FROM links JOIN linkages ON links.id = link_id JOIN friendships f ON f.friend_id = linkages.user_id WHERE f.user_id = ? GROUP BY links.id, url, domain_name, page_title ORDER BY COUNT(*) DESC LIMIT 30", @user.id ] )
       #@user.friend_linkages.popular.map(&:link)
     @friends = @user.friends.popular #all(:order => "twitter_followers_count DESC")
-    @popular_domains = @user.domains.popular
+    @popular_domains = @user.domains.find(:all, :select => "name, COUNT(*) AS qty", :group => "name", :order => "qty DESC")
     #Link.find_by_sql( [ "SELECT domain, COUNT(*) AS n FROM links JOIN linkages ON links.id = link_id JOIN friendships f ON f.friend_id = linkages.user_id WHERE linkages.user_id = ? OR f.user_id = ? GROUP BY domain ORDER BY COUNT(*) DESC LIMIT 25", @user.id, @user.id ] )
 	@youtube_links = @user.links.find(:all, :conditions => "domain_name = 'youtube.com'", :limit => 5)
   end

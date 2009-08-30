@@ -31,14 +31,14 @@
           %td
             .domain= link.domain_name
             .title= link_to((link.page_title || link.url), link.url)
-            .users_list= Linkage.find_all_by_link_id(link.id).map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
+            .users_list= Linkage.find_all_by_link_id(link.id, :include => :user).map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
 
     %h2 popular domains
     %table
       - for domain in @popular_domains
         %tr
           %td
-            .linkages_count= domain.linkages_count
+            .linkages_count= domain.qty
           %td
             .title= link_to(domain.name, domain_path(domain.name.try(:gsub, '.', '_'))) if domain.name
 

@@ -26,9 +26,9 @@ ActiveRecord::Schema.define(:version => 20090830080519) do
 
   create_table "domains", :force => true do |t|
     t.string   "name"
-    t.string   "linkages_count"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "linkages_count"
   end
 
   create_table "friendships", :force => true do |t|
