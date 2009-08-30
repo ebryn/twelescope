@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090830104123) do
+ActiveRecord::Schema.define(:version => 20090830202218) do
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0
@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(:version => 20090830104123) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "domain_id"
+    t.string   "shared_url"
   end
 
   create_table "links", :force => true do |t|
@@ -58,6 +59,7 @@ ActiveRecord::Schema.define(:version => 20090830104123) do
     t.string   "image_url"
     t.integer  "domain_id"
     t.boolean  "followed",       :default => false
+    t.string   "original_url"
   end
 
   create_table "short_links", :force => true do |t|

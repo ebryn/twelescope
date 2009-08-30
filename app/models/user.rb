@@ -15,7 +15,7 @@ class User < ActiveRecord::Base
 
   def update_from_twitter
     return if no_twitter_account?
-    fetch_linkages
+    add_linkages *find_urls_in_tweets
     if site_visitor?
       create_users_from_twitter_friends
       read_friends_twitter_feeds
@@ -58,11 +58,15 @@ class User < ActiveRecord::Base
     self.friends.each { |f| f.enqueue }
   end
   
-  def fetch_linkages
-    find_urls_in_tweets.each do |url|
-      link = ShortLink.find_by_url(url, :include => :link).try(:link) || Link.find_or_create_by_url(url)
+  def add_linkages *urls
+    urls.each do |url|
+      existing_linkage = Linkage.find_by_shared_url url, :include => :link
+      link = existing_linkage ? existing_linkage.link : Link.find_or_create_by_url(url)
+      
+      #link = ShortLink.find_by_url(url, :include => :link).try(:link) || Link.find_or_create_by_url(url)
       unless self.links.include?(link)
-        self.linkages.create :link => link
+        new_linkage = self.linkages.build :shared_url => url, :link => link
+        new_linkage.save unless new_record?
       end
     end
   end

@@ -4,12 +4,22 @@ require 'pathname'
 require 'pp'
 require 'test/unit'
 require 'action_view/test_case'
-gem 'thoughtbot-shoulda'
+require 'shoulda'
 
 gem 'mocha'
-gem 'jnunemaker-matchy', '0.4.0'
+gem 'jnunemaker-matchy'
+require 'mocha'
+require 'matchy'
 
 class Test::Unit::TestCase  
+  def self.should_respond_to(*method_names)
+    klass = self.name.gsub(/Test$/, '').constantize
+    method_names.each do |method_name|
+      should "respond to #{method_name}" do
+        assert_respond_to klass.new, method_name
+      end
+    end
+  end
   
   custom_matcher :be_nil do |receiver, matcher, args|
     matcher.positive_failure_message = "Expected #{receiver} to be nil but it wasn't"

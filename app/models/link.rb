@@ -1,6 +1,6 @@
 class Link < ActiveRecord::Base
   has_many :linkages
-  has_many :short_links
+  #has_many :short_links
   has_many :users, :through => :linkages
   belongs_to :domain
 
@@ -50,8 +50,10 @@ class Link < ActiveRecord::Base
   
   def expand_url
     if expanded_url = self.class.expand_url(url)
-      self.short_links.create :url => self.url
+      #self.short_links.create :url => self.url
+      self.original_url = url
       self.url = expanded_url
+      set_domain
       true
     else
       false
@@ -105,7 +107,6 @@ class Link < ActiveRecord::Base
   
   def perform
     expand_url
-    set_domain
     fetch_title
     save
   rescue => e
