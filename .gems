@@ -1,5 +1,6 @@
 nokogiri
 hayesdavis-grackle --source gems.github.com
+pauldix-typhoeus --source gems.github.com
 will_paginate
 friendly_id
 chriseppstein-compass --source gems.github.com

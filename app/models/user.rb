@@ -11,45 +11,51 @@ class User < ActiveRecord::Base
 
   QUEUE_PRIORITY = 5
   include Rehab::Enqueueable
+  include Rehab::Tweetable
 
   def update_from_twitter
+    return if no_twitter_account?
     fetch_linkages
-    create_users_from_twitter_friends
-    read_friends_twitter_feeds
+    if site_visitor?
+      create_users_from_twitter_friends
+      read_friends_twitter_feeds
+    end
+  rescue Rehab::TwitterClient::NoSuchUser
+    update_attribute :no_twitter_account, true
   end
-  
-  def fetch_twitter_friends
-    @@client ||= Grackle::Client.new
-    @@client.statuses.friends.send("#{self.twitter_name}?")
+
+  def add_twitter_friend(twitter_name)
+    existing_friend = friends.find_by_twitter_name( twitter_name ) 
+    unless existing_friend
+      new_friend = User.find_or_create_by_twitter_name(twitter_name)
+      friendships.create( :friend => new_friend )
+    end
+    existing_friend || new_friend
   end
   
   def create_users_from_twitter_friends
-    fetch_twitter_friends.map do |friend|
-      friend_record = User.find_or_create_by_twitter_name(friend.screen_name)
-      unless self.friends.include?(friend_record)
-        self.friendships.create :friend => friend_record
-      end
-      friend_record.update_attributes(:twitter_friends_count => friend.friends_count, :twitter_followers_count => friend.followers_count)
+    friends = twitter.friends(:user => twitter_name )
+    return unless friends
+    friends.each do |friend|
+      friend_record = add_twitter_friend friend['screen_name']
+      friend_record.update_attributes(:twitter_friends_count => friend['friends_count'], :twitter_followers_count => friend['followers_count'])
     end
   end
-  
+
+  def eligible_for_tweet_searching?
+    self.last_searched.nil? || self.last_searched < 10.minutes.ago
+  end
+
   def find_urls_in_tweets
-    # return [] if self.last_searched && (self.last_searched - Time.now) < 10.minutes
-    @@client ||= Grackle::Client.new
-    results = @@client[:search].search.json?(:rpp => 100, :from => self.twitter_name).results
+    return [] unless eligible_for_tweet_searching?
+    results = search_twitter.query( :params => { :rpp => 100, :from => twitter_name } )[:results]
     self.update_attribute :last_searched, Time.now
-    results.select { |r| r.text.include?('http://') }.
-      map { |r| URI.extract(r.text, 'http') }.flatten
+    results.inject([]) { |urls, tweet| urls << Link.extract_urls(tweet['text']) }.flatten.compact
   end
   
   def read_friends_twitter_feeds
-    self.friends.map do |friend|
-      if block_given?
-        yield [friend, friend.fetch_linkages]
-      else
-        friend.fetch_linkages
-      end
-    end
+    return unless self.site_visitor?
+    self.friends.each { |f| f.enqueue }
   end
   
   def fetch_linkages
@@ -67,7 +73,7 @@ class User < ActiveRecord::Base
   end
 
   def start_loading
-    self.update_attribute :loading, true
+    self.update_attributes :loading => true, :site_visitor => true
     enqueue
   end
 

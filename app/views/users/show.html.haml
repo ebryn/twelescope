@@ -1,11 +1,17 @@
-= stylesheet_link_tag 'users-show'
+- content_for :stylesheets do
+  = stylesheet_link_tag 'users-show'
+
 %h1
   Most Popular:
   = link_to @user.twitter_name, "http://twitter.com/#{@user.twitter_name}"
+  - form_tag user_path(@user), :method => :put do
+    = submit_tag "Reload"
 
 #loadable
 
   .ajax_wrapper
+    - if @user.no_twitter_account
+      No Twitter account matches this user.
     - if @user.loading?
       #ajax-loading
         = image_tag "gc-ajax-loader.gif"

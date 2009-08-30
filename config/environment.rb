@@ -18,6 +18,7 @@ Rails::Initializer.run do |config|
   # config.gem "bj"
   # config.gem "hpricot", :version => '0.6', :source => "http://code.whytheluckystiff.net"
   config.gem "hayesdavis-grackle", :lib => "grackle"
+  config.gem "pauldix-typhoeus", :lib => "typhoeus"
   config.gem "nokogiri"
   config.gem "will_paginate"
   config.gem "friendly_id"

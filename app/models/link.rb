@@ -89,6 +89,10 @@ class Link < ActiveRecord::Base
     end
   end
   
+  def self.extract_urls(text)
+    URI.extract(text, 'http') if text.include?('http://')
+  end
+  
   def fetch_title
     Timeout::timeout(5) do
       raw_page_title = Nokogiri.HTML(open(url).read).at("//title").text.strip rescue nil

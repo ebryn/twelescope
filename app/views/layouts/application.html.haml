@@ -5,10 +5,19 @@
     /[if lt IE 8]
       = stylesheet_link_tag 'ie.css', :media => 'screen, projection'
     = stylesheet_link_tag 'application', :media => 'screen, projection'
+    = yield :stylesheets
 
   %body.blueprint
     #header.container
     #main.container
+      #flash
+        - if flash[:notice]
+          .notice
+            = flash[:notice]
+        - if flash[:error]
+          .error
+            = flash[:error]
+
       = yield
     #footer.container
 
