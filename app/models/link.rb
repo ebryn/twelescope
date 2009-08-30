@@ -91,7 +91,7 @@ class Link < ActiveRecord::Base
   
   def fetch_title
     Timeout::timeout(5) do
-      raw_page_title = Nokogiri.HTML(open(expanded_url || url).read).at("//title").text.strip rescue nil
+      raw_page_title = Nokogiri.HTML(open(url).read).at("//title").text.strip rescue nil
       ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
       self.page_title = ic.iconv(raw_page_title + ' ')[0..-2]
     end
