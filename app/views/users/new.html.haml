@@ -7,7 +7,7 @@
     - form_tag '/users' do
       %p
         %label{:for => 'twitter_name'} 
-        = text_field_tag :id, params[:twitter_name], :id => 'twitter_name'
+        = text_field_tag :id, params[:twitter_name], :id => 'twitter_name', :style => 'text-align: center'
 
 
 - content_for :js_ready do
