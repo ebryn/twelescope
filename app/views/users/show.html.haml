@@ -1,27 +1,38 @@
+= stylesheet_link_tag 'users-show'
 %h1
   Most Popular:
   = link_to @user.twitter_name, "http://twitter.com/#{@user.twitter_name}"
 
-%h3 recent links
+%h2 recent links
 %table
   - for link in @user_links
     %tr
-      %td= link.linkages.count
-      %td= link_to((link.page_title || link.expanded_url || link.url), (link.expanded_url || link.url))
+      %td
+        .linkages_count= link.linkages.count
+      %td
+        .domain= link.domain
+        .title= link_to((link.page_title || link.url), link.url)
+        .users_list= link.linkages.map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
 
-%h3 popular links from friends
+%h2 popular links from friends
 %table
   - for link in @links
     %tr
-      %td= link.n
-      %td= link_to((link.page_title || link.url), link.url)
+      %td
+        .linkages_count= link.n
+      %td
+        .domain= link.domain
+        .title= link_to((link.page_title || link.url), link.url)
+        .users_list= Linkage.find_all_by_link_id(link.id).map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
 
-%h3 popular domains
+%h2 popular domains
 %table
   - for domain in @popular_domains
     %tr
-      %td= domain.n
-      %td= domain.domain
+      %td
+        .linkages_count= domain.n
+      %td
+        .title= domain.domain
 
 -#
   %h3 friends
@@ -32,4 +43,4 @@
         %td= friend.twitter_followers_count
 
 
-%h3 videos
+%h2 videos

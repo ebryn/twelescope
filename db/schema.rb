@@ -47,6 +47,8 @@ ActiveRecord::Schema.define(:version => 20090830001959) do
     t.string   "domain"
     t.text     "page_title"
     t.text     "page_excerpt"
+    t.string   "page_type"
+    t.string   "image_url"
   end
 
   create_table "users", :force => true do |t|

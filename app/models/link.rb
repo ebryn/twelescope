@@ -1,9 +1,11 @@
 class Link < ActiveRecord::Base
-  before_save :expand_url
-  before_save :set_domain
-  before_save :fetch_title
   has_many :linkages
   has_many :users, :through => :linkages
+  after_create :enqueue
+  
+  def enqueue
+    Delayed::Job.enqueue self
+  end
   
   def self.fetch_expanded_urls
     find_in_batches(:conditions => {:expanded_url => nil}) do |links|
@@ -70,5 +72,12 @@ class Link < ActiveRecord::Base
     end
   rescue Timeout::Error => e
     nil
+  end
+  
+  def perform
+    expand_url
+    set_domain
+    fetch_title
+    save
   end
 end

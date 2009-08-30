@@ -27,7 +27,7 @@ class User < ActiveRecord::Base
   end
   
   def find_urls_in_tweets
-    return [] if self.last_searched
+    return [] if self.last_searched && (self.last_searched - Time.now) < 10.minutes
     @@client ||= Grackle::Client.new
     results = @@client[:search].search.json?(:rpp => 100, :from => self.twitter_name).results
     self.update_attribute :last_searched, Time.now
