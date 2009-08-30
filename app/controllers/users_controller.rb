@@ -14,6 +14,8 @@ class UsersController < ApplicationController
     @links = Link.find_by_sql( ["SELECT links.id, url, domain, page_title, COUNT(*) AS n FROM links JOIN linkages ON links.id = link_id JOIN friendships f ON f.friend_id = linkages.user_id WHERE f.user_id = ? GROUP BY links.id, url, domain, page_title ORDER BY COUNT(*) DESC LIMIT 30", @user.id ] )
     @friends = @user.friends.all(:order => "twitter_followers_count DESC")
     @popular_domains = Link.find_by_sql( [ "SELECT domain, COUNT(*) AS n FROM links JOIN linkages ON links.id = link_id JOIN friendships f ON f.friend_id = linkages.user_id WHERE linkages.user_id = ? OR f.user_id = ? GROUP BY domain ORDER BY COUNT(*) DESC LIMIT 25", @user.id, @user.id ] )
+    
+    @youtube_links = @user.links.find(:all, :conditions => "domain = 'youtube.com'", :limit => 5)
   end
   
   def create 
