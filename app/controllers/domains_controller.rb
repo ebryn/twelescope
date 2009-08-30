@@ -1,6 +1,6 @@
 class DomainsController < ApplicationController
   def index
-    @domains = Domain.popular
+    @domains = Domain.popular.paginate(:page => params[:page], :order => "linkages_count DESC")
 =begin
     @domains = Link.find(:all, 
       :select => "domain, COUNT(*) AS linkages_count",
@@ -13,6 +13,7 @@ class DomainsController < ApplicationController
   
   def show
     @domain = Domain.find_by_name params[:id].gsub('_', '.')
+    @links = @domain.links.paginate(:page => params[:page], :order => "linkages_count DESC")
 =begin
     @links = Link.paginate(:page => params[:page], 
       :select => "links.id, domain, page_title, url, COUNT(*) AS linkages_count",

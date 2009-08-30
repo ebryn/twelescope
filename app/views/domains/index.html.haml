@@ -1,5 +1,6 @@
 = stylesheet_link_tag 'users-show'
 
+= will_paginate @domains
 %table
   - for domain in @domains
     %tr
@@ -7,4 +8,4 @@
         .linkages_count= domain.linkages_count
       %td
         .title= link_to domain.name, domain_path(domain.name.gsub('.', '_'))
-      
+= will_paginate @domains
