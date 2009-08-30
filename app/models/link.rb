@@ -1,5 +1,6 @@
 class Link < ActiveRecord::Base
   has_many :linkages
+  has_many :short_links
   has_many :users, :through => :linkages
   after_create :enqueue
   
@@ -68,7 +69,9 @@ class Link < ActiveRecord::Base
   
   def fetch_title
     Timeout::timeout(5) do
-      self.page_title = Nokogiri.HTML(open(expanded_url || url).read).at("//title").text.strip rescue nil
+      raw_page_title = Nokogiri.HTML(open(expanded_url || url).read).at("//title").text.strip rescue nil
+      ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
+      self.page_title = ic.iconv(raw_page_title + ' ')[0..-2]
     end
   rescue Timeout::Error => e
     nil

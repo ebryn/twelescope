@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  link_id: 1
+  url: MyString
+  inactive: false
+
+two:
+  link_id: 1
+  url: MyString
+  inactive: false

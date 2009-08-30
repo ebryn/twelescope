@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090830010256) do
+ActiveRecord::Schema.define(:version => 20090830043333) do
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0
@@ -40,7 +40,6 @@ ActiveRecord::Schema.define(:version => 20090830010256) do
 
   create_table "links", :force => true do |t|
     t.string   "url"
-    t.string   "expanded_url"
     t.integer  "global_count"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -49,6 +48,14 @@ ActiveRecord::Schema.define(:version => 20090830010256) do
     t.text     "page_excerpt"
     t.string   "page_type"
     t.string   "image_url"
+  end
+
+  create_table "short_links", :force => true do |t|
+    t.integer  "link_id"
+    t.string   "url"
+    t.boolean  "inactive",   :default => false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "users", :force => true do |t|
