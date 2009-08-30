@@ -1,22 +1,23 @@
-%head
-  = stylesheet_link_tag 'reset.css', :media => 'screen, projection'
-  = stylesheet_link_tag 'screen.css', :media => 'screen, projection'
-  = stylesheet_link_tag 'partials/_base.css'
-  = stylesheet_link_tag 'print.css', :media => 'print'
-  /[if lt IE 8]
-    = stylesheet_link_tag 'ie.css', :media => 'screen, projection'
-  = stylesheet_link_tag 'application', :media => 'screen, projection'
+%html
+  %head
+    = stylesheet_link_tag 'reset.css', :media => 'screen, projection'
+    = stylesheet_link_tag 'screen.css', :media => 'screen, projection'
+    = stylesheet_link_tag 'partials/_base.css'
+    = stylesheet_link_tag 'print.css', :media => 'print'
+    /[if lt IE 8]
+      = stylesheet_link_tag 'ie.css', :media => 'screen, projection'
+    = stylesheet_link_tag 'application', :media => 'screen, projection'
 
-%body.blueprint
-  #header.container
-  #main.container
-    = yield
-  #footer.container
+  %body.blueprint
+    #header.container
+    #main.container
+      = yield
+    #footer.container
 
 
-  = javascript_include_tag 'jquery-1.3.2.min.js'
-  = yield :js_libraries
-  - javascript_tag do
-    $(function() {
-    = yield :dom_ready
-    });
+    = javascript_include_tag 'jquery-1.3.2.min.js'
+    = yield :js_libraries
+    - javascript_tag do
+      $(function() {
+      = yield :dom_ready
+      });
