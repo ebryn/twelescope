@@ -2,10 +2,7 @@
   = stylesheet_link_tag 'users-show'
 
 %h1
-  Most Popular:
-  = link_to @user.twitter_name, "http://twitter.com/#{@user.twitter_name}"
-  - form_tag user_path(@user), :method => :put do
-    = submit_tag "Reload"
+  = "#{@user.twitter_name}'s twitterverse"
 
 #loadable
 
@@ -17,49 +14,59 @@
         = image_tag "gc-ajax-loader.gif"
         Loading . . .
 
-    %h2 recent links
-    %table
-      - for link in @user_links
-        %tr
-          %td
-            .linkages_count= link.linkages.count
-          %td
-            .domain= link.domain_name
-            .title= link_to((link.page_title || link.url), link.url)
-            .users_list= link.linkages.map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
+    .box
+      .content
+        %h2 Top domains
+        %ol
+          - for domain in @popular_domains
+            %li.title= link_to(domain.name, domain_path(domain.name.try(:gsub, '.', '_'))) if domain
 
-    %h2 popular links from friends
-    %table
-      - for link in @friend_links
-        %tr
-          %td
-            .linkages_count= link.qty
-          %td
-            .domain= link.domain_name
-            .title= link_to((link.page_title || link.url), link.url)
-            .users_list= Linkage.find_all_by_link_id(link.id, :include => :user).map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
+    .box.push2
+      .content
+        %h2 Top connections
+        %ol
+          - for friend in @friends
+            %li.title= link_to friend.twitter_name, user_path(friend.twitter_name)
 
-    %h2 popular domains
-    %table
-      - for domain in @popular_domains
-        %tr
-          %td
-            .linkages_count= domain.qty
-          %td
-            .title= link_to(domain.name, domain_path(domain.name.try(:gsub, '.', '_'))) if domain.name
+    .box.last.push2
+      .content
+        %h2 Top tags
+        %ol
+          - for i in (1..10)
+            %li.title= "Tag ##{i}"
+
+    .big-box
+      .content
+        %h2= "Top links from #{@user.twitter_name}'s network"
+        %table
+          - for link in @friend_links
+            %tr
+              %td
+                .linkages_count= link.qty
+              %td
+                .domain= link.domain_name
+                .title= link_to((link.page_title || link.url), link.url)
+                .users_list= Linkage.find_all_by_link_id(link.id, :include => :user).map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
+        
+    .big-box
+      .content
+        %h2= "Recent links by #{@user.twitter_name}"
+        %table
+          - for link in @user_links
+            %tr
+              %td
+                .linkages_count= link.linkages.count
+              %td
+                .domain= link.domain_name
+                .title= link_to((link.page_title || link.url), link.url)
+                .users_list= link.linkages.map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
+
+
 
     -#
-      %h3 friends
-      %table
-        - for friend in @friends
-          %tr
-            %td= friend.twitter_name
-            %td= friend.twitter_followers_count
-
-
-    %h2 videos
-    - for youtube_link in @youtube_links
-      = youtube_embed(youtube_link.url)
+      %h2 videos
+      - for youtube_link in @youtube_links
+        = youtube_embed(youtube_link.url)
 
 - content_for :js_libraries do
   = javascript_include_tag "regular_reload"

@@ -1,16 +1,12 @@
 /* line 1, ../../app/stylesheets/users-show.sass */
-h2 {
-  border-bottom: 1px solid black; }
+.linkages_count {
+  font-size: 14pt; }
 
 /* line 3, ../../app/stylesheets/users-show.sass */
-.linkages_count {
-  font-size: 20pt; }
-
-/* line 5, ../../app/stylesheets/users-show.sass */
 .domain {
   float: right;
-  font-size: 12pt; }
+  font-size: 10pt; }
 
-/* line 8, ../../app/stylesheets/users-show.sass */
+/* line 6, ../../app/stylesheets/users-show.sass */
 .title {
-  font-size: 14pt; }
+  font-size: 12pt; }

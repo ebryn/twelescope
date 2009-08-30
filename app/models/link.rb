@@ -72,7 +72,7 @@ class Link < ActiveRecord::Base
           if uri.host == "om.ly"
             UrlShortenerExpander.get(url)
           else
-            nil
+            url
           end
         end
       end

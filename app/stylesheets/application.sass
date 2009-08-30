@@ -1,3 +1,62 @@
 @import base.sass
 @import layout.sass
 @import appearance.sass
+
+body.blueprint
+  :margin-top 0
+
+  #header .content
+
+    :padding 5px 20px
+    :background-color #A7EB00
+
+    label, input
+      :font-size 14pt
+
+  #toolbar
+    :height 45px
+    :padding 5px
+    :background-color #00629B
+
+  #main
+    :background-color #EBEFFF
+
+  .right
+    :float right
+
+  .clear
+    :clear both
+
+  h1
+    :font-size 18pt
+    :color #75777F
+    :padding 10px 0
+
+  .content_container
+    :margin 0 70px
+
+  .box
+    +column(6)
+    +append(1)
+
+  .big-box
+    +column(10)
+    +append(1)
+
+  .box, .big-box
+    :margin-bottom 30px
+    .content
+      -moz-border-radius: 8px
+      -webkit-border-radius: 8px
+      :background-color white
+      :padding 5px 30px
+
+    h2
+      :font-size 14pt
+      :padding 5px 0
+      :color black
+      :border-bottom 2px solid #F2F2F2
+    ol
+      /:margin-left 50px
+
+      
