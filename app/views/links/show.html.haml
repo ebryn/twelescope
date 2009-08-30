@@ -1,5 +1,5 @@
 %h2= @link.page_title
-%h3= auto_link(@link.expanded_url || @link.url)
+%h3= auto_link(@link.url)
 = pluralize(@link.linkages.count, 'linkage')
 %table
   - for linkage in @link.linkages

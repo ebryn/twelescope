@@ -3,5 +3,5 @@
   - for link in @links
     %tr
       %td= link.linkages_count
-      %td= link_to((link.page_title || link.expanded_url || link.url), link_path(link))
+      %td= link_to((link.page_title || link.url), link_path(link))
 = will_paginate @links

@@ -10,6 +10,6 @@
         .linkages_count= link.linkages.count
       %td
         .domain= link.domain
-        .title= link_to((link.page_title || link.expanded_url || link.url), (link.expanded_url || link.url))
+        .title= link_to((link.page_title || link.url), link.url)
         .users_list= link.linkages.map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
 
