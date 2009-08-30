@@ -40,7 +40,7 @@ class Link < ActiveRecord::Base
   def set_domain
     begin
       unless self.domain_name
-        uri = URI.parse(self.expanded_url || self.url)
+        uri = URI.parse( self.url)
         self.domain_name = uri.host.try(:gsub, /www\d*\./, '')
       end
       ensure_domain
