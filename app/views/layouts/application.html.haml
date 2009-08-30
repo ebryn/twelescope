@@ -1,8 +1,7 @@
+<<<<<<< HEAD:app/views/layouts/application.html.haml
 %html
   %head
-    = stylesheet_link_tag 'reset.css', :media => 'screen, projection'
     = stylesheet_link_tag 'screen.css', :media => 'screen, projection'
-    = stylesheet_link_tag 'partials/_base.css'
     = stylesheet_link_tag 'print.css', :media => 'print'
     /[if lt IE 8]
       = stylesheet_link_tag 'ie.css', :media => 'screen, projection'
@@ -18,6 +17,7 @@
     = javascript_include_tag 'jquery-1.3.2.min.js'
     = yield :js_libraries
     - javascript_tag do
+      = yield :js_init
       $(function() {
-      = yield :dom_ready
+      = yield :js_ready
       });

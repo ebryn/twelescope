@@ -18,7 +18,7 @@ class UsersController < ApplicationController
   
   def create 
     @user = User.find_or_create_by_twitter_name(params[:id])
-    Delayed::Job.enqueue @user
+    @user.start_loading
     redirect_to user_path @user
   end
 end

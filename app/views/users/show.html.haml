@@ -3,44 +3,64 @@
   Most Popular:
   = link_to @user.twitter_name, "http://twitter.com/#{@user.twitter_name}"
 
-%h2 recent links
-%table
-  - for link in @user_links
-    %tr
-      %td
-        .linkages_count= link.linkages.count
-      %td
-        .domain= link.domain
-        .title= link_to((link.page_title || link.url), link.url)
-        .users_list= link.linkages.map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
+#loadable
 
-%h2 popular links from friends
-%table
-  - for link in @links
-    %tr
-      %td
-        .linkages_count= link.n
-      %td
-        .domain= link.domain
-        .title= link_to((link.page_title || link.url), link.url)
-        .users_list= Linkage.find_all_by_link_id(link.id).map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
+  .ajax_wrapper
+    - if @user.loading?
+      #ajax-loading
+        = image_tag "gc-ajax-loader.gif"
+        Loading . . .
 
-%h2 popular domains
-%table
-  - for domain in @popular_domains
-    %tr
-      %td
-        .linkages_count= domain.n
-      %td
-        .title= domain.domain
+    %h2 recent links
+    %table
+      - for link in @user_links
+        %tr
+          %td
+            .linkages_count= link.linkages.count
+          %td
+            .domain= link.domain
+            .title= link_to((link.page_title || link.url), link.url)
+            .users_list= link.linkages.map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
 
--#
-  %h3 friends
-  %table
-    - for friend in @friends
-      %tr
-        %td= friend.twitter_name
-        %td= friend.twitter_followers_count
+    %h2 popular links from friends
+    %table
+      - for link in @links
+        %tr
+          %td
+            .linkages_count= link.n
+          %td
+            .domain= link.domain
+            .title= link_to((link.page_title || link.url), link.url)
+            .users_list= Linkage.find_all_by_link_id(link.id).map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
+
+    %h2 popular domains
+    %table
+      - for domain in @popular_domains
+        %tr
+          %td
+            .linkages_count= domain.n
+          %td
+            .title= domain.domain
+
+    -#
+      %h3 friends
+      %table
+        - for friend in @friends
+          %tr
+            %td= friend.twitter_name
+            %td= friend.twitter_followers_count
 
 
-%h2 videos
+    %h2 videos
+
+- content_for :js_libraries do
+  = javascript_include_tag "regular_reload"
+
+- content_for :js_init do
+  var reloader;
+
+- content_for :js_ready do
+  :plain
+    if($('#ajax-loading').size()> 0) {
+      reloader = setInterval( function() { reload_content( "#loadable", location.href + " .ajax_wrapper" ) }, 5000 );
+    }
