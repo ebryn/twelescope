@@ -6,5 +6,9 @@
 
     - form_tag '/users' do
       %p
-        %label{:for => 'twitter_username'} 
-        = text_field_tag :id, "", :id => 'twitter_username'
+        %label{:for => 'twitter_name'} 
+        = text_field_tag :id, params[:twitter_name], :id => 'twitter_name'
+
+
+- content_for :dom_ready do
+  $('#twitter_name').focus();
