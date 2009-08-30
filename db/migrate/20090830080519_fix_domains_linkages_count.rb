@@ -1,9 +1,9 @@
 class FixDomainsLinkagesCount < ActiveRecord::Migration
   def self.up
-    change_column :links, :linkages_count, :integer
+    change_column :domains, :linkages_count, :integer
   end
 
   def self.down
-    change_column :links, :linkages_count, :string
+    change_column :domains, :linkages_count, :string
   end
 end
