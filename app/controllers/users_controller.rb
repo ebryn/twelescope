@@ -12,7 +12,7 @@ class UsersController < ApplicationController
       redirect_to( :action => :new, :twitter_name => params[:id] ) and return
     end
 
-    @user_links = @user.links.paginate(:page => params[:page], :include => {:linkages => :user})
+    @user_links = @user.links.paginate(:page => params[:page]) #, :include => {:linkages => :user})
     @friend_links =  Link.find_by_sql( ["SELECT links.id, url, domain_name, page_title, COUNT(*) AS qty FROM links JOIN linkages ON links.id = link_id JOIN friendships f ON f.friend_id = linkages.user_id WHERE f.user_id = ? GROUP BY links.id, url, domain_name, page_title ORDER BY COUNT(*) DESC LIMIT 30", @user.id ] )
       #@user.friend_linkages.popular.map(&:link)
     @friends = @user.friends.popular #all(:order => "twitter_followers_count DESC")

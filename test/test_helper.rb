@@ -1,38 +1,54 @@
-ENV["RAILS_ENV"] = "test"
-require File.expand_path(File.dirname(__FILE__) + "/../config/environment")
-require 'test_help'
+ENV['RAILS_ENV'] = 'test'
+require 'config/environment.rb'
+require 'pathname'
+require 'pp'
+require 'test/unit'
+require 'action_view/test_case'
+gem 'thoughtbot-shoulda'
 
-class ActiveSupport::TestCase
-  # Transactional fixtures accelerate your tests by wrapping each test method
-  # in a transaction that's rolled back on completion.  This ensures that the
-  # test database remains unchanged so your fixtures don't have to be reloaded
-  # between every test method.  Fewer database queries means faster tests.
-  #
-  # Read Mike Clark's excellent walkthrough at
-  #   http://clarkware.com/cgi/blosxom/2005/10/24#Rails10FastTesting
-  #
-  # Every Active Record database supports transactions except MyISAM tables
-  # in MySQL.  Turn off transactional fixtures in this case; however, if you
-  # don't care one way or the other, switching from MyISAM to InnoDB tables
-  # is recommended.
-  #
-  # The only drawback to using transactional fixtures is when you actually 
-  # need to test transactions.  Since your test is bracketed by a transaction,
-  # any transactions started in your code will be automatically rolled back.
-  self.use_transactional_fixtures = true
+gem 'mocha'
+gem 'jnunemaker-matchy', '0.4.0'
 
-  # Instantiated fixtures are slow, but give you @david where otherwise you
-  # would need people(:david).  If you don't want to migrate your existing
-  # test cases which use the @david style and don't mind the speed hit (each
-  # instantiated fixtures translates to a database query per test method),
-  # then set this back to true.
-  self.use_instantiated_fixtures  = false
+class Test::Unit::TestCase  
+  
+  custom_matcher :be_nil do |receiver, matcher, args|
+    matcher.positive_failure_message = "Expected #{receiver} to be nil but it wasn't"
+    matcher.negative_failure_message = "Expected #{receiver} not to be nil but it was"
+    receiver.nil?
+  end
+  
+  custom_matcher :be_true do |receiver, matcher, args|
+    matcher.positive_failure_message = "Expected #{receiver} to be true but it wasn't"
+    matcher.negative_failure_message = "Expected #{receiver} not to be true but it was"
+    receiver.eql?(true)
+  end
+  
+  custom_matcher :be_false do |receiver, matcher, args|
+    matcher.positive_failure_message = "Expected #{receiver} to be false but it wasn't"
+    matcher.negative_failure_message = "Expected #{receiver} not to be false but it was"
+    receiver.eql?(false)
+  end
 
-  # Setup all fixtures in test/fixtures/*.(yml|csv) for all tests in alphabetical order.
-  #
-  # Note: You'll currently still have to declare fixtures explicitly in integration tests
-  # -- they do not yet inherit this setting
-  fixtures :all
+  custom_matcher :be_valid do |receiver, matcher, args|
+    matcher.positive_failure_message = "Expected to be valid but it was invalid #{receiver.errors.inspect}"
+    matcher.negative_failure_message = "Expected to be invalid but it was valid #{receiver.errors.inspect}"
+    receiver.valid?
+  end
 
-  # Add more helper methods to be used by all tests here...
+  custom_matcher :have_error_on do |receiver, matcher, args|
+    receiver.valid?
+    attribute = args[0]
+    expected_message = args[1]
+    
+    if expected_message.nil?
+      matcher.positive_failure_message = "#{receiver} had no errors on #{attribute}"
+      matcher.negative_failure_message = "#{receiver} had errors on #{attribute} #{receiver.errors.inspect}"
+      !receiver.errors.on(attribute).blank?
+    else
+      actual = receiver.errors.on(attribute)
+      matcher.positive_failure_message = %Q(Expected error on #{attribute} to be "#{expected_message}" but was "#{actual}")
+      matcher.negative_failure_message = %Q(Expected error on #{attribute} not to be "#{expected_message}" but was "#{actual}")
+      actual == expected_message
+    end
+  end
 end
