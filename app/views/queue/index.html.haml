@@ -1,0 +1,26 @@
+%style
+  :sass
+    td pre
+      :overflow auto
+      :width 300px
+      :max-height 200px
+%h2= pluralize(@jobs.size, 'job')
+%table
+  %thead
+    %tr
+      %th id
+      %th priority
+      %th run at
+      %th attempts
+      %th last error
+      %th created at
+      
+  - for job in @jobs
+    %tr{:class => cycle('odd', 'even')}
+      %td= job.id
+      %td= job.priority
+      %td{:nowrap => "nowrap"}= job.run_at
+      %td= job.attempts
+      %td
+        %pre=h job.last_error
+      %td= job.created_at

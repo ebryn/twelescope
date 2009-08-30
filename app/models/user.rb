@@ -9,6 +9,7 @@ class User < ActiveRecord::Base
 
   named_scope :popular, :order => "twitter_followers_count DESC", :limit => 25
 
+  QUEUE_PRIORITY = 5
   include Rehab::Enqueueable
 
   def update_from_twitter
@@ -19,7 +20,7 @@ class User < ActiveRecord::Base
   
   def fetch_twitter_friends
     @@client ||= Grackle::Client.new
-    @@client.statuses.friends.send("#{twitter_name}?")
+    @@client.statuses.friends.send("#{self.twitter_name}?")
   end
   
   def create_users_from_twitter_friends
@@ -33,7 +34,7 @@ class User < ActiveRecord::Base
   end
   
   def find_urls_in_tweets
-    return [] if self.last_searched && (self.last_searched - Time.now) < 10.minutes
+    # return [] if self.last_searched && (self.last_searched - Time.now) < 10.minutes
     @@client ||= Grackle::Client.new
     results = @@client[:search].search.json?(:rpp => 100, :from => self.twitter_name).results
     self.update_attribute :last_searched, Time.now
@@ -53,8 +54,8 @@ class User < ActiveRecord::Base
   
   def fetch_linkages
     find_urls_in_tweets.each do |url|
-      link = Link.find_or_create_by_url(url)
-      unless links.include?(link)
+      link = ShortLink.find_by_url(url, :include => :link).try(:link) || Link.find_or_create_by_url(url)
+      unless self.links.include?(link)
         self.linkages.create :link => link
       end
     end
