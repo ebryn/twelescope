@@ -79,5 +79,6 @@ class Link < ActiveRecord::Base
     set_domain
     fetch_title
     save
+  rescue => e
   end
 end
