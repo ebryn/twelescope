@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20090830001959) do
+ActiveRecord::Schema.define(:version => 20090830010256) do
 
   create_table "delayed_jobs", :force => true do |t|
     t.integer  "priority",   :default => 0
@@ -58,6 +58,7 @@ ActiveRecord::Schema.define(:version => 20090830001959) do
     t.integer  "twitter_followers_count"
     t.integer  "twitter_friends_count"
     t.datetime "last_searched"
+    t.boolean  "loading"
   end
 
 end

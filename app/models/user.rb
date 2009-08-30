@@ -56,5 +56,15 @@ class User < ActiveRecord::Base
   
   def perform
     update_from_twitter
+    finished_loading
+  end
+
+  def start_loading
+    self.update_attribute :loading, true
+    Delayed::Job.enqueue self
+  end
+
+  def finished_loading 
+    self.update_attribute :loading, false
   end
 end
