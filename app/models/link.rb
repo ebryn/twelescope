@@ -2,10 +2,21 @@ class Link < ActiveRecord::Base
   has_many :linkages
   has_many :short_links
   has_many :users, :through => :linkages
+  belongs_to :domain
+
+  before_save :update_linkage_domains
   after_create :enqueue
-  
-  def enqueue
-    Delayed::Job.enqueue self
+  include Rehab::Enqueueable
+
+  def ensure_domain
+    return unless domain_name
+    self.domain ||= Domain.find_or_create_by_name domain_name
+  end
+
+  def update_linkage_domains
+    if domain_id_changed?
+      linkages.each { |lkg| lkg.domain = domain; lkg.save unless lkg.new_record? }
+    end
   end
   
   # def self.fetch_expanded_urls
@@ -28,8 +39,11 @@ class Link < ActiveRecord::Base
 
   def set_domain
     begin
-      uri = URI.parse(self.url)
-      self.domain = uri.host.try(:gsub, /www\d*\./, '')
+      unless self.domain_name
+        uri = URI.parse(self.expanded_url || self.url)
+        self.domain_name = uri.host.try(:gsub, /www\d*\./, '')
+      end
+      ensure_domain
     rescue URI::InvalidURIError => e
     end
   end

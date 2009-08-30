@@ -4,6 +4,12 @@ class User < ActiveRecord::Base
   has_many :linkages
   has_many :links, :through => :linkages
   has_friendly_id :twitter_name
+  has_many :domains, :through => :linkages, :uniq => true
+  #has_many :friend_linkages, :through => :friends, :class_name => 'Linkage', :source => :linkages, :uniq => true 
+
+  named_scope :popular, :order => "twitter_followers_count DESC", :limit => 25
+
+  include Rehab::Enqueueable
 
   def update_from_twitter
     fetch_linkages
@@ -61,7 +67,7 @@ class User < ActiveRecord::Base
 
   def start_loading
     self.update_attribute :loading, true
-    Delayed::Job.enqueue self
+    enqueue
   end
 
   def finished_loading 

@@ -18,18 +18,18 @@
           %td
             .linkages_count= link.linkages.count
           %td
-            .domain= link.domain
+            .domain= link.domain_name
             .title= link_to((link.page_title || link.url), link.url)
             .users_list= link.linkages.map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
 
     %h2 popular links from friends
     %table
-      - for link in @links
+      - for link in @friend_links
         %tr
           %td
-            .linkages_count= link.n
+            .linkages_count= link.qty
           %td
-            .domain= link.domain
+            .domain= link.domain_name
             .title= link_to((link.page_title || link.url), link.url)
             .users_list= Linkage.find_all_by_link_id(link.id).map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
 
@@ -38,9 +38,9 @@
       - for domain in @popular_domains
         %tr
           %td
-            .linkages_count= domain.n
+            .linkages_count= domain.linkages_count
           %td
-            .title= link_to(domain.domain, domain_path(domain.domain.try(:gsub, '.', '_'))) if domain.domain
+            .title= link_to(domain.name, domain_path(domain.name.try(:gsub, '.', '_'))) if domain.name
 
     -#
       %h3 friends
