@@ -1,6 +1,6 @@
 = stylesheet_link_tag 'users-show'
 %h1
-  = @domain
+  = link_to @domain, "http://#{@domain}"
 
 %h2 most popular links
 %table
