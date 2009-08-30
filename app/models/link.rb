@@ -9,7 +9,7 @@ class Link < ActiveRecord::Base
   include Rehab::Enqueueable
 
   def ensure_domain
-    return unless domain_name
+    return unless self.domain_name
     self.domain ||= Domain.find_or_create_by_name domain_name
   end
 
@@ -29,7 +29,7 @@ class Link < ActiveRecord::Base
   end
   
   def self.set_domain_fields
-    find_in_batches(:conditions => "domain_name IS NULL OR url NOT LIKE ('%' || domain_name || '%')") do |links|
+    find_in_batches(:conditions => "domain_id IS NULL OR domain_name IS NULL OR url NOT LIKE ('%' || domain_name || '%')") do |links|
       links.each do |link|
         link.set_domain
         link.save
@@ -40,7 +40,7 @@ class Link < ActiveRecord::Base
   def set_domain
     begin
       unless self.domain_name
-        uri = URI.parse( self.url)
+        uri = URI.parse(self.url)
         self.domain_name = uri.host.try(:gsub, /www\d*\./, '')
       end
       ensure_domain
