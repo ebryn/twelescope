@@ -13,7 +13,7 @@ class UsersController < ApplicationController
     end
 
     @user_links = @user.links.find(:all, :limit => 25, :select => "links.*, (SELECT COUNT(*) FROM linkages WHERE links.id = linkages.link_id) AS n").sort_by { |l| l.n.to_i }.reverse
-    @friend_links =  Link.find_by_sql( ["SELECT links.id, url, domain, page_title, COUNT(*) AS qty FROM links JOIN linkages ON links.id = link_id JOIN friendships f ON f.friend_id = linkages.user_id WHERE f.user_id = ? GROUP BY links.id, url, domain, page_title ORDER BY COUNT(*) DESC LIMIT 30", @user.id ] )
+    @friend_links =  Link.find_by_sql( ["SELECT links.id, url, domain_name, page_title, COUNT(*) AS qty FROM links JOIN linkages ON links.id = link_id JOIN friendships f ON f.friend_id = linkages.user_id WHERE f.user_id = ? GROUP BY links.id, url, domain_name, page_title ORDER BY COUNT(*) DESC LIMIT 30", @user.id ] )
       #@user.friend_linkages.popular.map(&:link)
     @friends = @user.friends.popular #all(:order => "twitter_followers_count DESC")
     @popular_domains = @user.domains.popular
