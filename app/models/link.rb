@@ -63,7 +63,7 @@ class Link < ActiveRecord::Base
   end
 
   def fetch_title
-    raw_page_title = Rehab::TitleLookup.find :base_uri => url, :timeout => 2000
+    raw_page_title = Rehab::TitleLookup.find :base_uri => url, :timeout => 3000
     if raw_page_title
       ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
       self.page_title = ic.iconv(raw_page_title + ' ')[0..-2]
