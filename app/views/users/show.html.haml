@@ -46,7 +46,6 @@
               %td
                 .linkages_count= link.qty
               %td
-                .domain= link.domain_name
                 .title= link_to((link.page_title || link.url), link.url)
                 .users_list= Linkage.find_all_by_link_id(link.id, :include => :user).map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
         
@@ -59,7 +58,6 @@
               %td
                 .linkages_count= link.linkages.count
               %td
-                .domain= link.domain_name
                 .title= link_to((link.page_title || link.url), link.url)
                 .users_list= link.linkages.map { |l| link_to l.user.twitter_name, user_path(l.user.twitter_name) }.join(', ')
 
