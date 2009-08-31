@@ -67,5 +67,19 @@ class UserTest < Test::Unit::TestCase
         @user.links(true).first.url.should == @example_url
       end
     end
+
+    context "queue priority" do
+      setup do
+        @friend = User.new :twitter_name => "blah"
+        @visitor = User.new :twitter_name => "beter", :site_visitor => true
+      end
+
+      should "set visitors as high priority" do
+        @visitor.queue_priority.should == 10
+      end
+      should "set friends as normal priority" do
+        @friend.queue_priority.should == 5
+      end
+    end
   end
 end

@@ -18,6 +18,7 @@ class LinkTest < Test::Unit::TestCase
       should "create a domain" do
         @link.domain.name.should == "museumtwo.blogspot.com"
       end
+
       context "expanding urls when the domain is set" do
         setup do
           @link.domain = Domain.create :name => "bitly.com"
@@ -36,6 +37,10 @@ class LinkTest < Test::Unit::TestCase
           @link.followed.should be_true
         end
       end
+    end
+
+    content "in the queue" do
+
     end
   end
 

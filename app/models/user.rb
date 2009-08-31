@@ -9,7 +9,6 @@ class User < ActiveRecord::Base
 
   named_scope :popular, :order => "twitter_followers_count DESC", :limit => 25
 
-  QUEUE_PRIORITY = 5
   include Rehab::Enqueueable
   include Rehab::Tweetable
 
@@ -22,6 +21,11 @@ class User < ActiveRecord::Base
     end
   rescue Rehab::TwitterClient::NoSuchUser
     update_attribute :no_twitter_account, true
+  end
+
+  def queue_priority
+    return 10 if site_visitor?
+    super
   end
 
   def add_twitter_friend(twitter_name)
@@ -62,8 +66,8 @@ class User < ActiveRecord::Base
     urls.each do |url|
       existing_linkage = Linkage.find_by_shared_url url, :include => :link
       link = existing_linkage ? existing_linkage.link : Link.find_or_create_by_url(url)
+      link.queue_priority = 15 if site_visitor?
       
-      #link = ShortLink.find_by_url(url, :include => :link).try(:link) || Link.find_or_create_by_url(url)
       unless self.links.include?(link)
         new_linkage = self.linkages.build :shared_url => url, :link => link
         new_linkage.save unless new_record?

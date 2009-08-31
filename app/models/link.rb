@@ -85,6 +85,9 @@ class Link < ActiveRecord::Base
       logger.debug "Unknown error in url expander for #{url}"
     end
   end
+
+  attr_accessor :queue_priority
+
   
   def self.extract_urls(text)
     URI.extract(text, 'http') if text.include?('http://')
