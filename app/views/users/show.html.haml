@@ -1,18 +1,17 @@
 - content_for :stylesheets do
   = stylesheet_link_tag 'users-show'
 
-%h1
-  = "#{@user.twitter_name}'s twitterverse"
-
 #loadable
 
   .ajax_wrapper
+    %h1
+      = "#{@user.twitter_name}'s twitterverse"
+      - if @user.loading?
+        #ajax-loading
+          = image_tag "gc-ajax-loader.gif"
+
     - if @user.no_twitter_account
       No Twitter account matches this user.
-    - if @user.loading?
-      #ajax-loading
-        = image_tag "gc-ajax-loader.gif"
-        Loading . . .
 
     .box
       .content

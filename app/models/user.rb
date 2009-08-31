@@ -102,7 +102,12 @@ class User < ActiveRecord::Base
 
   def loading?
     (read_attribute(:loading) == true) ||
-      ( links.count(:conditions => ["followed = ?", false ]) > 0 )
+      ( links.unfollowed.count > 0 ) ||
+      friend_links_loading?
+  end
+
+  def friend_links_loading?
+    Linkage.count( :conditions => [ "links.followed = ? and linkages.user_id in (?)", false, friend_ids ], :include => :link ) > 0
   end
 
   def finished_loading 

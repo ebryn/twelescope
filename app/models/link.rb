@@ -8,6 +8,7 @@ class Link < ActiveRecord::Base
   after_create :enqueue
   attr_accessor :queue_priority
   include Rehab::Enqueueable
+  named_scope :unfollowed, :conditions => ["followed = ?", false ] 
 
   def queue_priority
     @queue_priority || 2
@@ -68,6 +69,8 @@ class Link < ActiveRecord::Base
       ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
       self.page_title = ic.iconv(raw_page_title + ' ')[0..-2]
     end
+  rescue NoMethodError => e
+    nil
   end
   
   def perform
