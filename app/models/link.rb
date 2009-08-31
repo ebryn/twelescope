@@ -69,7 +69,7 @@ class Link < ActiveRecord::Base
       ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
       self.page_title = ic.iconv(raw_page_title + ' ')[0..-2]
     end
-  rescue NoMethodError => e
+  rescue => e
     nil
   end
   
