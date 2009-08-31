@@ -72,8 +72,9 @@ class User < ActiveRecord::Base
   def add_linkages *urls
     urls.each do |url|
       existing_linkage = Linkage.find_by_shared_url url, :include => :link
-      link = existing_linkage ? existing_linkage.link : Link.find_or_create_by_url(url)
+      link = existing_linkage ? existing_linkage.link : Link.find_or_initialize_by_url(url)
       link.queue_priority = 15 if site_visitor?
+      link.save
       
       unless self.links.include?(link)
         new_linkage = self.linkages.build :shared_url => url, :link => link
@@ -97,6 +98,11 @@ class User < ActiveRecord::Base
   def start_loading
     self.update_attributes :loading => true, :site_visitor => true
     enqueue
+  end
+
+  def loading?
+    (read_attribute(:loading) == true) ||
+      ( links.count(:conditions => ["followed = ?", false ]) > 0 )
   end
 
   def finished_loading 
