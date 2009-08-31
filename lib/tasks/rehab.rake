@@ -8,7 +8,9 @@ namespace :rehab do
       links.each do |link|
         begin
           next if link.followed? or link.original_url
+          puts " attempting link #{link.url}"
           link.expand_url
+          puts " result #{link.url}\n\n"
           link.save!
         rescue => e
           nil
