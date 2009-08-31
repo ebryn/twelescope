@@ -39,7 +39,7 @@ class LinkTest < Test::Unit::TestCase
       end
     end
 
-    content "in the queue" do
+    context "in the queue" do
 
     end
   end

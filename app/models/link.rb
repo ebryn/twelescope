@@ -6,6 +6,7 @@ class Link < ActiveRecord::Base
 
   before_save :update_linkage_domains
   after_create :enqueue
+  attr_accessor :queue_priority
   include Rehab::Enqueueable
 
   def ensure_domain
@@ -16,34 +17,6 @@ class Link < ActiveRecord::Base
   def update_linkage_domains
     if domain_id_changed?
       linkages.each { |lkg| lkg.domain = domain; lkg.save unless lkg.new_record? }
-    end
-  end
-  
-  def self.fetch_expanded_urls
-    find_in_batches(:conditions => ["followed = ?", false]) do |links|
-      links.each do |link|
-        link.expand_url
-        link.save
-      end
-    end
-  end
-  
-  def self.set_domain_fields
-    find_in_batches(:conditions => "domain_id IS NULL OR domain_name IS NULL OR url NOT LIKE ('%' || domain_name || '%')") do |links|
-      links.each do |link|
-        link.set_domain
-        link.save
-      end
-    end
-  end
-
-  def set_domain
-    begin
-      unless domain && domain.name == domain_name && url.include?(domain_name)
-        reset_domain
-      end
-      ensure_domain
-    rescue URI::InvalidURIError => e
     end
   end
   
@@ -74,19 +47,11 @@ class Link < ActiveRecord::Base
       else
         self.inactive = true
       end
-    rescue Timeout::Error => e
-      logger.debug "FUCK! #{url}"
-      nil
-    rescue URI::InvalidURIError => e
-      nil
-    rescue SocketError => e
-      nil
     rescue => e
       logger.debug "Unknown error in url expander for #{url}"
     end
   end
 
-  attr_accessor :queue_priority
 
   
   def self.extract_urls(text)
