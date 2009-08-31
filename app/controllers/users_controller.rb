@@ -16,7 +16,7 @@ class UsersController < ApplicationController
     @friend_links =  Link.find_by_sql( ["SELECT links.id, url, domain_name, page_title, COUNT(*) AS qty FROM links JOIN linkages ON links.id = link_id JOIN friendships f ON f.friend_id = linkages.user_id WHERE f.user_id = ? GROUP BY links.id, url, domain_name, page_title ORDER BY COUNT(*) DESC LIMIT 10", @user.id ] )
       #@user.friend_linkages.popular.map(&:link)
     @friends = @user.friends.popular.all(:limit => 10) #all(:order => "twitter_followers_count DESC")
-    @popular_domains = Link.find_by_sql( [ "SELECT name, COUNT(*) AS qty FROM domains JOIN linkages ON linkages.domain_id = domains.id JOIN friendships f ON f.friend_id = linkages.user_id WHERE linkages.user_id = ? OR f.user_id = ? GROUP BY name ORDER BY COUNT(*) DESC LIMIT 10", @user.id, @user.id ] )
+    @popular_domains = Link.find_by_sql( [ "SELECT name, COUNT(*) AS qty FROM domains JOIN linkages ON linkages.domain_id = domains.id JOIN friendships f ON f.friend_id = linkages.user_id OR f.user_id = linkages.user_id WHERE linkages.user_id = ? OR f.user_id = ? GROUP BY name ORDER BY COUNT(*) DESC LIMIT 10", @user.id, @user.id ] )
     #@user.domains.find(:all, :select => "name, COUNT(*) AS qty", :group => "name", :order => "qty DESC", :limit => 10, :conditions => "name is not null")
     
     @tags = Tagging.find_by_sql( ["SELECT tag, SUM(qty) AS total_qty FROM taggings t JOIN friendships f ON f.friend_id = t.user_id WHERE f.user_id = ? GROUP BY tag ORDER BY SUM(qty) DESC LIMIT 10", @user.id ] )

@@ -3,6 +3,6 @@
 %table
   - for user_tagging in @user_taggings
     %tr
-      %td= link_to user_tagging.user.twitter_name, user_path(user_tagging.user.twitter_name)
-      %td= user_tagging.qty
+      %td.linkages_count= user_tagging.qty
+      %td.title= link_to user_tagging.user.twitter_name, user_path(user_tagging.user.twitter_name)
 
