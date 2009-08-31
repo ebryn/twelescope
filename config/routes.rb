@@ -1,5 +1,5 @@
 ActionController::Routing::Routes.draw do |map|
-  map.resources :users, :links, :domains
+  map.resources :users, :links, :domains, :tags
   map.resources :queue
   map.root :controller => 'users', :action => 'new'
 

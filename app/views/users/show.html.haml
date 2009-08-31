@@ -34,7 +34,7 @@
         %h2 Top tags
         %ol
           - for tag in @tags
-            %li.title= tag.tag
+            %li.title= link_to tag.tag, tag_path(tag.tag.gsub('#', ''))
 
     .clear
     .big-box
