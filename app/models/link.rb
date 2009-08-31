@@ -63,15 +63,11 @@ class Link < ActiveRecord::Base
   end
   
   def fetch_title
-    Timeout::timeout(5) do
-      raw_page_title = Nokogiri.HTML(open(url).read).at("//title").text.strip rescue nil
-      if raw_page_title
-        ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
-        self.page_title = ic.iconv(raw_page_title + ' ')[0..-2]
-      end
+    raw_page_title = Rehab::TitleLookup.find :base_uri => url, :timeout => 2000
+    if raw_page_title
+      ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
+      self.page_title = ic.iconv(raw_page_title + ' ')[0..-2]
     end
-  rescue Timeout::Error => e
-    nil
   end
   
   def perform

@@ -19,7 +19,8 @@
         %h2 Top domains
         %ol
           - for domain in @popular_domains
-            %li.title= link_to(domain.name, domain_path(domain.name.try(:gsub, '.', '_'))) if domain
+            - next unless domain && domain.name
+            %li.title= link_to(domain.name, domain_path(domain.name.try(:gsub, '.', '_'))) 
 
     .box.push2
       .content
@@ -35,6 +36,7 @@
           - for i in (1..10)
             %li.title= "Tag ##{i}"
 
+    .clear
     .big-box
       .content
         %h2= "Top links from #{@user.twitter_name}'s network"

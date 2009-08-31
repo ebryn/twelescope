@@ -16,7 +16,7 @@ class UsersController < ApplicationController
     @friend_links =  Link.find_by_sql( ["SELECT links.id, url, domain_name, page_title, COUNT(*) AS qty FROM links JOIN linkages ON links.id = link_id JOIN friendships f ON f.friend_id = linkages.user_id WHERE f.user_id = ? GROUP BY links.id, url, domain_name, page_title ORDER BY COUNT(*) DESC LIMIT 10", @user.id ] )
       #@user.friend_linkages.popular.map(&:link)
     @friends = @user.friends.popular.all(:limit => 10) #all(:order => "twitter_followers_count DESC")
-    @popular_domains = @user.domains.find(:all, :select => "name, COUNT(*) AS qty", :group => "name", :order => "qty DESC")
+    @popular_domains = @user.domains.find(:all, :select => "name, COUNT(*) AS qty", :group => "name", :order => "qty DESC", :limit => 10, :conditions => "name is not null")
     #Link.find_by_sql( [ "SELECT domain, COUNT(*) AS n FROM links JOIN linkages ON links.id = link_id JOIN friendships f ON f.friend_id = linkages.user_id WHERE linkages.user_id = ? OR f.user_id = ? GROUP BY domain ORDER BY COUNT(*) DESC LIMIT 25", @user.id, @user.id ] )
     @youtube_links = @user.links.find(:all, :conditions => "domain_name = 'youtube.com'", :limit => 5)
   end
