@@ -2,6 +2,6 @@ class Tagging < ActiveRecord::Base
   belongs_to :user
 
   def self.extract_tags(text)
-    text.scan(/(?:^| )(#[^, ]+)/).flatten
+    text.scan(/(?:^| )(#[^:., ]+)/).flatten
   end
 end
