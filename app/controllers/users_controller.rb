@@ -19,7 +19,7 @@ class UsersController < ApplicationController
     @popular_domains = Link.find_by_sql( [ "SELECT name, COUNT(*) AS qty FROM domains JOIN linkages ON linkages.domain_id = domains.id JOIN friendships f ON f.friend_id = linkages.user_id OR f.user_id = linkages.user_id WHERE linkages.user_id = ? OR f.user_id = ? GROUP BY name ORDER BY COUNT(*) DESC LIMIT 10", @user.id, @user.id ] )
     #@user.domains.find(:all, :select => "name, COUNT(*) AS qty", :group => "name", :order => "qty DESC", :limit => 10, :conditions => "name is not null")
     
-    @tags = Tagging.find_by_sql( ["SELECT tag, SUM(qty) AS total_qty FROM taggings t JOIN friendships f ON f.friend_id = t.user_id WHERE f.user_id = ? GROUP BY tag ORDER BY SUM(qty) DESC LIMIT 10", @user.id ] )
+    @tags = Tagging.find_by_sql( ["SELECT tag, SUM(qty) AS total_qty FROM taggings t JOIN friendships f ON f.friend_id = t.user_id OR f.user_id = t.user_id WHERE f.user_id = ? GROUP BY tag ORDER BY SUM(qty) DESC LIMIT 10", @user.id ] )
   end
 
   def update
