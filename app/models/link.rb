@@ -9,6 +9,10 @@ class Link < ActiveRecord::Base
   attr_accessor :queue_priority
   include Rehab::Enqueueable
 
+  def queue_priority
+    @queue_priority || 2
+  end
+
   def ensure_domain
     return unless self.domain_name
     self.domain ||= Domain.find_or_create_by_name domain_name
@@ -74,6 +78,5 @@ class Link < ActiveRecord::Base
     expand_url
     fetch_title
     save!
-  rescue => e
   end
 end

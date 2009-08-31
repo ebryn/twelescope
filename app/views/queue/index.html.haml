@@ -4,7 +4,11 @@
       :overflow auto
       :width 300px
       :max-height 200px
-%h2= pluralize(@jobs.size, 'job')
+%h2
+  = pluralize(Delayed::Job.count, 'job')
+  ( showing
+  = @jobs.size
+  )
 %table
   %thead
     %tr
