@@ -54,7 +54,7 @@ class User < ActiveRecord::Base
   end
 
   def parse_tweets
-    return [] unless eligible_for_tweet_searching?
+    return {:urls => [], :tags => []} unless eligible_for_tweet_searching?
     results = search_twitter.query( :params => { :rpp => 100, :from => twitter_name } )[:results]
     self.update_attribute :last_searched, Time.now
     results.inject({:urls => [], :tags => []}) do |data, tweet| 
