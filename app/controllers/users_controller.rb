@@ -18,7 +18,7 @@ class UsersController < ApplicationController
     @friends = @user.friends.popular.all(:limit => 10) #all(:order => "twitter_followers_count DESC")
     @popular_domains = @user.domains.find(:all, :select => "name, COUNT(*) AS qty", :group => "name", :order => "qty DESC")
     #Link.find_by_sql( [ "SELECT domain, COUNT(*) AS n FROM links JOIN linkages ON links.id = link_id JOIN friendships f ON f.friend_id = linkages.user_id WHERE linkages.user_id = ? OR f.user_id = ? GROUP BY domain ORDER BY COUNT(*) DESC LIMIT 25", @user.id, @user.id ] )
-    @youtube_links = @user.links.find(:all, :conditions => "domain_name = 'youtube.com'", :limit => 5)
+    @tags = Tagging.find_by_sql( ["SELECT tag, SUM(qty) AS total_qty FROM taggings t JOIN friendships f ON f.friend_id = t.user_id WHERE f.user_id = ? GROUP BY tag ORDER BY SUM(qty) DESC LIMIT 10", @user.id ] )
   end
 
   def update

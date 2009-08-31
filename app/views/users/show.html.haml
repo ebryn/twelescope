@@ -19,7 +19,7 @@
         %h2 Top domains
         %ol
           - for domain in @popular_domains
-            %li.title= link_to(domain.name, domain_path(domain.name.try(:gsub, '.', '_'))) if domain
+            /%li.title= link_to(domain.name, domain_path(domain.name.try(:gsub, '.', '_'))) if domain
 
     .box.push2
       .content
@@ -32,8 +32,8 @@
       .content
         %h2 Top tags
         %ol
-          - for i in (1..10)
-            %li.title= "Tag ##{i}"
+          - for tag in @tags
+            %li.title= tag.tag
 
     .big-box
       .content

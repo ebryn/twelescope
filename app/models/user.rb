@@ -2,6 +2,7 @@ class User < ActiveRecord::Base
   has_many :friendships
   has_many :friends, :through => :friendships
   has_many :linkages
+  has_many :taggings
   has_many :links, :through => :linkages
   has_friendly_id :twitter_name
   has_many :domains, :through => :linkages, :uniq => true
@@ -14,7 +15,9 @@ class User < ActiveRecord::Base
 
   def update_from_twitter
     return if no_twitter_account?
-    add_linkages *find_urls_in_tweets
+    parsed_tweets = parse_tweets
+    add_linkages *(parsed_tweets[:urls].flatten.compact)
+    add_taggings parsed_tweets[:tags].flatten.compact
     if site_visitor?
       create_users_from_twitter_friends
       read_friends_twitter_feeds
@@ -50,11 +53,15 @@ class User < ActiveRecord::Base
     self.last_searched.nil? || self.last_searched < 10.minutes.ago
   end
 
-  def find_urls_in_tweets
+  def parse_tweets
     return [] unless eligible_for_tweet_searching?
     results = search_twitter.query( :params => { :rpp => 100, :from => twitter_name } )[:results]
     self.update_attribute :last_searched, Time.now
-    results.inject([]) { |urls, tweet| urls << Link.extract_urls(tweet['text']) }.flatten.compact
+    results.inject({:urls => [], :tags => []}) do |data, tweet| 
+      data[:urls] << Link.extract_urls(tweet['text'])
+      data[:tags] << Tagging.extract_tags(tweet['text'])
+      data
+    end
   end
   
   def read_friends_twitter_feeds
@@ -72,6 +79,13 @@ class User < ActiveRecord::Base
         new_linkage = self.linkages.build :shared_url => url, :link => link
         new_linkage.save unless new_record?
       end
+    end
+  end
+
+  def add_taggings tags
+    tags.each do |tag|
+      tagging = self.taggings.find_or_create_by_tag(tag.downcase)
+      tagging.increment! :qty
     end
   end
   
